@@ -29,13 +29,11 @@ class Composer extends Component
                 'format' => Client::FORMAT_JSON
             ],
         ]);
-        $request = $client->createRequest();
-        if (!empty($params)) {
-            $request->setData($params);
-        }
-        $request->setMethod($method)
-            ->setUrl($url);
-        return $request->send();
+        return $client->createRequest()
+            ->setData($params)
+            ->setMethod($method)
+            ->setUrl($url)
+            ->send();
     }
 
     /**
@@ -83,7 +81,7 @@ class Composer extends Component
      * @param string $package
      * @return \yii\httpclient\Response
      */
-    public function getPackage($vendor,$package)
+    public function getPackage($vendor, $package)
     {
         return $this->api("packages/{$vendor}/{$package}.json", 'GET');
     }

@@ -253,17 +253,17 @@ class YunTongxun extends Component
     {
         // 拼接请求包体
         $body = " <Request>
-                  <Appid>$this->AppId</Appid>
+                  <Appid>$this->appId</Appid>
                   <Dial number='$number'  userdata='$userdata' record='$record'></Dial>
                 </Request>";
         $this->showlog("request body = " . $body);
         // 大写的sig参数
-        $sig = strtoupper(md5($this->AccountSid . $this->AccountToken . $this->Batch));
+        $sig = strtoupper(md5($this->accountSid . $this->accountToken . $this->Batch));
         // 生成请求URL
-        $url = "https://$this->ServerIP:$this->ServerPort/$this->SoftVersion/Accounts/$this->AccountSid/ivr/dial?sig=$sig";
+        $url = "https://$this->serverIP:$this->ServerPort/$this->softVersion/Accounts/$this->accountSid/ivr/dial?sig=$sig";
         $this->showlog("request url = " . $url);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳。
-        $authen = base64_encode($this->AccountSid . ":" . $this->Batch);
+        $authen = base64_encode($this->accountSid . ":" . $this->batch);
         // 生成包头
         $header = array("Accept:application/xml", "Content-Type:application/xml;charset=utf-8", "Authorization:$authen");
         // 发送请求
@@ -390,8 +390,6 @@ class YunTongxun extends Component
         } else if ($method == 'POST') {
             $url = $this->composeUrl($url, ['sig' => $sign]);
         }
-
-
         $client = new Client([
             'baseUrl' => $this->baseUrl,
             'requestConfig' => [
@@ -401,17 +399,16 @@ class YunTongxun extends Component
                 'format' => Client::FORMAT_JSON
             ],
         ]);
-        $request = $client->createRequest();
-        if (!empty($headers)) {
-            $request->setHeaders($headers);
-        }
-        if (!empty($params)) {
-            $request->setData($params);
-        }
-        // 生成授权：主帐户Id + 英文冒号 + 时间戳。
-        $response = $request->addHeaders(['Authorization' => base64_encode($this->accountSid . ":" . $this->batch)])
+        // 生成授权：主帐户Id + 英文冒号 + 时间戳
+        $headers = array_merge($headers, [
+            'Content-type' => 'application/json',
+            'Authorization' => base64_encode($this->accountSid . ":" . $this->batch)]);
+        $response = $client->createRequest()
+            ->setHeaders($headers)
+            ->setData($params)
             ->setMethod($method)
-            ->setUrl($url)->send();
+            ->setUrl($url)
+            ->send();
         if ($response['statusCode'] == '0000') {
             unset($response['statusCode']);
             return $response;

@@ -48,17 +48,13 @@ class BaiduApiStore extends Component
                 'format' => Client::FORMAT_JSON
             ],
         ]);
-        $request = $client->createRequest();
-        if (!empty($headers)) {
-            $request->setHeaders($headers);
-        }
-        if (!empty($params)) {
-            $request->setData($params);
-        }
-        $request->addHeaders(['apikey' => $this->apiKey])
+        $headers = array_merge($headers, ['apikey' => $this->apiKey]);
+        return $client->createRequest()
+            ->setHeaders($headers)
+            ->setData($params)
             ->setMethod($method)
-            ->setUrl($url);
-        return $request->send();
+            ->setUrl($url)
+            ->send();
     }
 
     /**
