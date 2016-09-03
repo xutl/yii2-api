@@ -40,7 +40,7 @@ class BaiduApiStore extends Component
      * @param array $headers
      * @return \yii\httpclient\Response
      */
-    private function api($url, $method, array $params, array $headers = [])
+    private function api($url, $method, array $params = [], array $headers = [])
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,
@@ -52,9 +52,11 @@ class BaiduApiStore extends Component
         if (!empty($headers)) {
             $request->setHeaders($headers);
         }
+        if (!empty($params)) {
+            $request->setData($params);
+        }
         $request->addHeaders(['apikey' => $this->apiKey])
             ->setMethod($method)
-            ->setData($params)
             ->setUrl($url);
         return $request->send();
     }
