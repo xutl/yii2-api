@@ -40,7 +40,7 @@ class BaiduApiStore extends Component
      * @param array $headers
      * @return \yii\httpclient\Response
      */
-    private function api($url, $method, array $params = [], array $headers = [])
+    protected function api($url, $method, array $params = [], array $headers = [])
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,
