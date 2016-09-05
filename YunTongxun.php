@@ -248,30 +248,15 @@ class YunTongxun extends Component
      * @param string $number 待呼叫号码，为Dial节点的属性
      * @param string $userdata 用户数据，在<startservice>通知中返回，只允许填写数字字符，为Dial节点的属性
      * @param string $record 是否录音，可填项为true和false，默认值为false不录音，为Dial节点的属性
+     * @return array
      */
-    function ivrDial($number, $userdata, $record)
+    public function ivrDial($number, $userdata, $record)
     {
-        // 拼接请求包体
-        $body = " <Request>
-                  <Appid>$this->appId</Appid>
-                  <Dial number='$number'  userdata='$userdata' record='$record'></Dial>
-                </Request>";
-        $this->showlog("request body = " . $body);
-        // 大写的sig参数
-        $sig = strtoupper(md5($this->accountSid . $this->accountToken . $this->Batch));
-        // 生成请求URL
-        $url = "https://$this->serverIP:$this->ServerPort/$this->softVersion/Accounts/$this->accountSid/ivr/dial?sig=$sig";
-        $this->showlog("request url = " . $url);
-        // 生成授权：主帐户Id + 英文冒号 + 时间戳。
-        $authen = base64_encode($this->accountSid . ":" . $this->batch);
-        // 生成包头
-        $header = array("Accept:application/xml", "Content-Type:application/xml;charset=utf-8", "Authorization:$authen");
-        // 发送请求
-        $result = $this->curl_post($url, $body, $header);
-        $this->showlog("response body = " . $result);
-        $datas = simplexml_load_string(trim($result, " \t\n\r"));
-
-        return $datas;
+        $params = [
+            'appId' => $this->appId,
+            'dial' => ['number' => $number, 'userdata' => $userdata, 'record' => $record],
+        ];
+        return $this->api("Accounts/$this->accountSid/ivr/dial", 'POST', $params);
     }
 
     /**
@@ -401,7 +386,8 @@ class YunTongxun extends Component
         ]);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳
         $headers = array_merge($headers, [
-            'Content-type' => 'application/json',
+            //'Accept' => 'application/json',
+            //'Content-type' => 'application/json;charset=utf-8',
             'Authorization' => base64_encode($this->accountSid . ":" . $this->batch)]);
         $response = $client->createRequest()
             ->setHeaders($headers)
@@ -409,7 +395,7 @@ class YunTongxun extends Component
             ->setMethod($method)
             ->setUrl($url)
             ->send();
-        if ($response['statusCode'] == '0000') {
+        if ($response->content['statusCode'] == '0000') {
             unset($response['statusCode']);
             return $response;
         }

@@ -2,6 +2,7 @@
 namespace xutl\api;
 
 use Yii;
+use yii\helpers\Json;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\httpclient\Client;
@@ -14,7 +15,7 @@ use yii\httpclient\Client;
  */
 class BaiduApiStore extends Component
 {
-    public $baseUrl = 'http://apis.baidu.com/';
+    public $baseUrl = 'http://apis.baidu.com';
 
     /**
      * @var string 百度ApiKey
@@ -38,29 +39,51 @@ class BaiduApiStore extends Component
      * @param string $method
      * @param array $params
      * @param array $headers
-     * @return \yii\httpclient\Response
+     * @return array
      */
-    protected function api($url, $method, array $params = [], array $headers = [])
+    private function api($url, $method, array $params = [], array $headers = [])
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,
-            'responseConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
         ]);
+        // 生成授权：主帐户Id + 英文冒号 + 时间戳
         $headers = array_merge($headers, ['apikey' => $this->apiKey]);
-        return $client->createRequest()
+        $response = $request = $client->createRequest()
+            ->setUrl($url)
+            ->setMethod($method)
             ->setHeaders($headers)
             ->setData($params)
-            ->setMethod($method)
-            ->setUrl($url)
             ->send();
+
+        return Json::decode($response->content);
     }
 
     /**
-     * get mobile
+     * 查询身份证男女归属地
+     * @param string $id
+     * @return array
+     */
+    public function getId($id)
+    {
+        $response = $this->api('apistore/idservice/id', 'GET', ['id' => $id]);
+        return $response;
+    }
+
+    /**
+     * 查询IP地址归宿地
+     * @param string $ip
+     * @return array
+     */
+    public function getIp($ip)
+    {
+        $response = $this->api('apistore/iplookupservice/iplookup', 'GET', ['ip' => $ip]);
+        return $response;
+    }
+
+    /**
+     * 查询手机号码归属地
      *
-     * @param string mobile number
+     * @param string $mobile number
      * @return array
      */
     public function getMobile($mobile)
