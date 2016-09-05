@@ -42,7 +42,7 @@ class BaiduApiStore extends Component
      * @return array
      * @throws Exception
      */
-    private function api($url, $method, array $params = [], array $headers = [])
+    public function api($url, $method, array $params = [], array $headers = [])
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,

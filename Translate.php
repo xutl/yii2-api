@@ -48,10 +48,10 @@ class Translate extends Component
      * @param string $url
      * @param string $method
      * @param array $params
-     * @param array $headers
      * @return array
+     * @throws Exception
      */
-    public function api($url, $method, array $params = [], array $headers = [])
+    public function api($url, $method, array $params = [])
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,
@@ -65,7 +65,6 @@ class Translate extends Component
         $response = $request = $client->createRequest()
             ->setUrl($url)
             ->setMethod($method)
-            ->setHeaders($headers)
             ->setData($params)
             ->send();
         if (!$response->isOk) {

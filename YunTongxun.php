@@ -49,6 +49,68 @@ class YunTongxun extends Component
     }
 
     /**
+     * 合并基础URL和参数
+     * @param string $url base URL.
+     * @param array $params GET params.
+     * @return string composed URL.
+     */
+    protected function composeUrl($url, array $params = [])
+    {
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        } else {
+            $url .= '&';
+        }
+        $url .= http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+        return $url;
+    }
+
+    /**
+     * 请求Api接口
+     * @param string $url
+     * @param string $method
+     * @param array $params
+     * @param array $headers
+     * @return \yii\httpclient\Response
+     */
+    public function api($url, $method, array $params = [], array $headers = [])
+    {
+        $this->batch = date("YmdHis");
+        $sign = strtoupper(md5($this->accountSid . $this->accountToken . $this->batch));
+        if ($method == 'GET') {
+            $params = array_merge($params, ['sig' => $sign]);
+        } else if ($method == 'POST') {
+            $url = $this->composeUrl($url, ['sig' => $sign]);
+        }
+        $client = new Client([
+            'baseUrl' => $this->baseUrl,
+            'requestConfig' => [
+                'format' => Client::FORMAT_JSON
+            ],
+            'responseConfig' => [
+                'format' => Client::FORMAT_JSON
+            ],
+        ]);
+        // 生成授权：主帐户Id + 英文冒号 + 时间戳
+        $headers = array_merge($headers, [
+            //'Accept' => 'application/json',
+            //'Content-type' => 'application/json;charset=utf-8',
+            'Authorization' => base64_encode($this->accountSid . ":" . $this->batch)]);
+        $response = $client->createRequest()
+            ->setHeaders($headers)
+            ->setData($params)
+            ->setMethod($method)
+            ->setUrl($url)
+            ->send();
+        if ($response->content['statusCode'] == '0000') {
+            unset($response['statusCode']);
+            return $response;
+        }
+        Yii::error($response['statusCode'] . ':' . $response['statusMsg']);
+        return false;
+    }
+
+    /**
      * 设置主帐号
      *
      * @param string $accountSid 主帐号
@@ -341,65 +403,5 @@ class YunTongxun extends Component
         return $this->api("Accounts/$this->accountSid/SMS/QuerySMSTemplate", 'POST', $params);
     }
 
-    /**
-     * 合并基础URL和参数
-     * @param string $url base URL.
-     * @param array $params GET params.
-     * @return string composed URL.
-     */
-    protected function composeUrl($url, array $params = [])
-    {
-        if (strpos($url, '?') === false) {
-            $url .= '?';
-        } else {
-            $url .= '&';
-        }
-        $url .= http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-        return $url;
-    }
 
-    /**
-     * 请求Api接口
-     * @param string $url
-     * @param string $method
-     * @param array $params
-     * @param array $headers
-     * @return \yii\httpclient\Response
-     */
-    private function api($url, $method, array $params = [], array $headers = [])
-    {
-        $this->batch = date("YmdHis");
-        $sign = strtoupper(md5($this->accountSid . $this->accountToken . $this->batch));
-        if ($method == 'GET') {
-            $params = array_merge($params, ['sig' => $sign]);
-        } else if ($method == 'POST') {
-            $url = $this->composeUrl($url, ['sig' => $sign]);
-        }
-        $client = new Client([
-            'baseUrl' => $this->baseUrl,
-            'requestConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
-            'responseConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
-        ]);
-        // 生成授权：主帐户Id + 英文冒号 + 时间戳
-        $headers = array_merge($headers, [
-            //'Accept' => 'application/json',
-            //'Content-type' => 'application/json;charset=utf-8',
-            'Authorization' => base64_encode($this->accountSid . ":" . $this->batch)]);
-        $response = $client->createRequest()
-            ->setHeaders($headers)
-            ->setData($params)
-            ->setMethod($method)
-            ->setUrl($url)
-            ->send();
-        if ($response->content['statusCode'] == '0000') {
-            unset($response['statusCode']);
-            return $response;
-        }
-        Yii::error($response['statusCode'] . ':' . $response['statusMsg']);
-        return false;
-    }
 }

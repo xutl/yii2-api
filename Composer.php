@@ -22,7 +22,7 @@ class Composer extends Component
      * @return array
      * @throws Exception
      */
-    protected function api($url, $method, array $params = [])
+    public function api($url, $method, array $params = [])
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,
