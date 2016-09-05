@@ -7,19 +7,20 @@
 namespace xutl\api;
 
 use yii\base\Component;
+use yii\base\Exception;
 use yii\httpclient\Client;
 
 class Composer extends Component
 {
-    public $baseUrl = 'https://packagist.org/';
+    public $baseUrl = 'https://packagist.org';
 
     /**
      * 请求Api接口
      * @param string $url
      * @param string $method
      * @param array $params
-     * @param array $headers
-     * @return \yii\httpclient\Response
+     * @return array
+     * @throws Exception
      */
     protected function api($url, $method, array $params = [])
     {
@@ -29,16 +30,20 @@ class Composer extends Component
                 'format' => Client::FORMAT_JSON
             ],
         ]);
-        return $client->createRequest()
+        $response = $client->createRequest()
             ->setData($params)
             ->setMethod($method)
             ->setUrl($url)
             ->send();
+        if (!$response->isOk) {
+            throw new Exception ('Http request failed.');
+        }
+        return $response->data;
     }
 
     /**
      * 列出所有包
-     * @return \yii\httpclient\Response
+     * @return  array
      */
     public function getAll()
     {
@@ -48,7 +53,7 @@ class Composer extends Component
     /**
      * 按供应商列出包
      * @param string $vendor
-     * @return \yii\httpclient\Response
+     * @return array
      */
     public function getVendor($vendor)
     {
@@ -58,7 +63,7 @@ class Composer extends Component
     /**
      * 按类型列出包
      * @param string $type
-     * @return \yii\httpclient\Response
+     * @return array
      */
     public function getType($type)
     {
@@ -68,7 +73,7 @@ class Composer extends Component
     /**
      * 搜索
      * @param string $query
-     * @return \yii\httpclient\Response
+     * @return array
      */
     public function search($query)
     {
@@ -79,7 +84,7 @@ class Composer extends Component
      * 获取包
      * @param string $vendor
      * @param string $package
-     * @return \yii\httpclient\Response
+     * @return array
      */
     public function getPackage($vendor, $package)
     {

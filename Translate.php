@@ -7,6 +7,7 @@
 namespace xutl\api;
 
 use yii\base\Component;
+use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\httpclient\Client;
 
@@ -54,6 +55,9 @@ class Translate extends Component
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,
+            'responseConfig' => [
+                'format' => Client::FORMAT_JSON
+            ],
         ]);
         $salt = uniqid();
         $sign = md5($this->appId . $params['q'] . $salt . $this->appKey);
@@ -64,8 +68,10 @@ class Translate extends Component
             ->setHeaders($headers)
             ->setData($params)
             ->send();
-
-        return $response->content;
+        if (!$response->isOk) {
+            throw new Exception ('Http request failed.');
+        }
+        return $response->data;
     }
 
     /**

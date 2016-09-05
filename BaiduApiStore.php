@@ -2,8 +2,8 @@
 namespace xutl\api;
 
 use Yii;
-use yii\helpers\Json;
 use yii\base\Component;
+use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\httpclient\Client;
 
@@ -40,11 +40,15 @@ class BaiduApiStore extends Component
      * @param array $params
      * @param array $headers
      * @return array
+     * @throws Exception
      */
     private function api($url, $method, array $params = [], array $headers = [])
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,
+            'responseConfig' => [
+                'format' => Client::FORMAT_JSON
+            ],
         ]);
         // 生成授权：主帐户Id + 英文冒号 + 时间戳
         $headers = array_merge($headers, ['apikey' => $this->apiKey]);
@@ -54,8 +58,10 @@ class BaiduApiStore extends Component
             ->setHeaders($headers)
             ->setData($params)
             ->send();
-
-        return Json::decode($response->content);
+        if (!$response->isOk) {
+            throw new Exception ('Http request failed.');
+        }
+        return $response->data;
     }
 
     /**
