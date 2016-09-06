@@ -13,7 +13,7 @@ use yii\httpclient\Client;
  * @property string $apiKey
  * @package xutl\api
  */
-class BaiduApiStore extends Component
+class BaiduApiStore extends Component implements ApiInterface
 {
     public $baseUrl = 'http://apis.baidu.com';
 

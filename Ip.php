@@ -15,7 +15,7 @@ use yii\httpclient\Client;
  * Class Ip
  * @package xutl\api
  */
-class Ip extends Component
+class Ip extends Component implements ApiInterface
 {
     public $baseUrl = 'http://ip.taobao.com';
 
@@ -27,7 +27,7 @@ class Ip extends Component
      * @return array
      * @throws Exception
      */
-    public function api($url, $method, array $params = [])
+    public function api($url, $method, array $params = [], array $headers = [])
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,
@@ -39,6 +39,7 @@ class Ip extends Component
         $response = $request = $client->createRequest()
             ->setUrl($url)
             ->setMethod($method)
+            ->setHeaders($headers)
             ->setData($params)
             ->send();
         if (!$response->isOk) {

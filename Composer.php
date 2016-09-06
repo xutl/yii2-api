@@ -10,7 +10,7 @@ use yii\base\Component;
 use yii\base\Exception;
 use yii\httpclient\Client;
 
-class Composer extends Component
+class Composer extends Component implements ApiInterface
 {
     public $baseUrl = 'https://packagist.org';
 
@@ -22,7 +22,7 @@ class Composer extends Component
      * @return array
      * @throws Exception
      */
-    public function api($url, $method, array $params = [])
+    public function api($url, $method, array $params = [], array $headers = [])
     {
         $client = new Client([
             'baseUrl' => $this->baseUrl,
@@ -33,6 +33,7 @@ class Composer extends Component
         $response = $client->createRequest()
             ->setData($params)
             ->setMethod($method)
+            ->setHeaders($headers)
             ->setUrl($url)
             ->send();
         if (!$response->isOk) {

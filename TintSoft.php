@@ -15,7 +15,7 @@ use yii\httpclient\Client;
  * Class TintSoft
  * @package xutl\api
  */
-class TintSoft extends Component
+class TintSoft extends Component implements ApiInterface
 {
     public $baseUrl = 'http://api.tintsoft.com';
 

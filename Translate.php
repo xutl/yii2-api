@@ -15,7 +15,7 @@ use yii\httpclient\Client;
  * Class Translate
  * @package xutl\api
  */
-class Translate extends Component
+class Translate extends Component implements ApiInterface
 {
     /**
      * @var

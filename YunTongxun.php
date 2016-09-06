@@ -15,7 +15,7 @@ use yii\httpclient\Client;
  * Class YunTongxun
  * @package xutl\api
  */
-class YunTongxun extends Component
+class YunTongxun extends Component implements ApiInterface
 {
     public $baseUrl = 'https://app.cloopen.com:8883';
     public $accountSid;
