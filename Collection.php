@@ -22,7 +22,7 @@ class Collection extends Component
     private $_apis = [];
 
     /**
-     * @param array $clients list of api clients
+     * @param array $apis list of api clients
      */
     public function setApis(array $apis)
     {
