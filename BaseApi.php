@@ -103,20 +103,6 @@ class BaseApi extends Component
      */
     public function api($url, $method, array $params = [], array $headers = [])
     {
-        return $this->apiInternal($method, $url, $params, $headers);
-    }
-
-    /**
-     * Performs request to the API.
-     * @param string $url absolute API URL.
-     * @param string $method request method.
-     * @param array $params request parameters.
-     * @param array $headers additional request headers.
-     * @return array API response.
-     * @throws Exception on failure.
-     */
-    protected function apiInternal($method, $url, array $params, array $headers)
-    {
         return $this->sendRequest($method, $url, $params, $headers);
     }
 }

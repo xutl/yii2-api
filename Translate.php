@@ -72,12 +72,12 @@ class Translate extends BaseApi
      * @return array
      * @throws Exception
      */
-    protected function apiInternal($method, $url, array $params = [], array $headers = [])
+    public function api($method, $url, array $params = [], array $headers = [])
     {
         $salt = uniqid();
         $sign = md5($this->appId . $params['q'] . $salt . $this->appKey);
         $params = array_merge($params, ['appid' => $this->appId, 'sign' => $sign, 'salt' => $salt]);
-        return parent::apiInternal($method, $url, $params, $headers);
+        return parent::api($method, $url, $params, $headers);
     }
 
     /**

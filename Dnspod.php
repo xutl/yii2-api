@@ -16,7 +16,7 @@ use yii\base\InvalidConfigException;
  * Class Dnspod
  * @package xutl\api
  */
-class Dnspod extends Component implements ApiInterface
+class Dnspod extends BaseApi
 {
     public $baseUrl = 'https://dnsapi.cn';
 
@@ -40,6 +40,23 @@ class Dnspod extends Component implements ApiInterface
     }
 
     /**
+     * 获取Http Client
+     * @return Client
+     */
+    public function getHttpClient()
+    {
+        if (!is_object($this->_httpClient)) {
+            $this->_httpClient = new Client([
+                'baseUrl' => $this->baseUrl,
+                'responseConfig' => [
+                    'format' => Client::FORMAT_JSON
+                ],
+            ]);
+        }
+        return $this->_httpClient;
+    }
+
+    /**
      * 请求Api接口
      * @param string $url
      * @param string $method
@@ -48,26 +65,12 @@ class Dnspod extends Component implements ApiInterface
      * @return array
      * @throws Exception
      */
-    public function api($url, $method = 'POST', array $params = [], array $headers = [])
+    public function api($method, $url, array $params = [], array $headers = [])
     {
-        $client = new Client([
-            'baseUrl' => $this->baseUrl,
-            'responseConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
-        ]);
         $params = array_merge($params, ['login_token' => $this->id . ',' . $this->token, 'format' => 'json']);
         $headers = array_merge($headers, ['user-agent' => 'XTL DDNS Client/' . $this->_version]);
-
-        $response = $request = $client->createRequest()
-            ->setUrl($url)
-            ->setMethod($method)
-            ->setHeaders($headers)
-            ->setData($params)
-            ->send();
-        if (!$response->isOk) {
-            throw new Exception ('Http request failed.');
-        } else if ($response->data['status']['code'] != 1) {
+        $response = parent::api($method, $url, $params, $headers);
+        if ($response->data['status']['code'] != 1) {
             throw new Exception ($response->data['status']['message']);
         }
         return $response->data;
@@ -80,7 +83,7 @@ class Dnspod extends Component implements ApiInterface
      */
     public function version()
     {
-        return $this->api('Info.Version');
+        return $this->api('Info.Version','POST');
     }
 
     public function domainList($type = 'all', $offset = null, $length=20, $group_id = 0, $keyword = null)

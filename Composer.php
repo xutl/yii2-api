@@ -10,36 +10,25 @@ use yii\base\Component;
 use yii\base\Exception;
 use yii\httpclient\Client;
 
-class Composer extends Component implements ApiInterface
+class Composer extends BaseApi
 {
     public $baseUrl = 'https://packagist.org';
 
     /**
-     * 请求Api接口
-     * @param string $url
-     * @param string $method
-     * @param array $params
-     * @return array
-     * @throws Exception
+     * 获取Http Client
+     * @return Client
      */
-    public function api($url, $method, array $params = [], array $headers = [])
+    public function getHttpClient()
     {
-        $client = new Client([
-            'baseUrl' => $this->baseUrl,
-            'responseConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
-        ]);
-        $response = $client->createRequest()
-            ->setData($params)
-            ->setMethod($method)
-            ->setHeaders($headers)
-            ->setUrl($url)
-            ->send();
-        if (!$response->isOk) {
-            throw new Exception ('Http request failed.');
+        if (!is_object($this->_httpClient)) {
+            $this->_httpClient = new Client([
+                'baseUrl' => $this->baseUrl,
+                'responseConfig' => [
+                    'format' => Client::FORMAT_JSON
+                ],
+            ]);
         }
-        return $response->data;
+        return $this->_httpClient;
     }
 
     /**

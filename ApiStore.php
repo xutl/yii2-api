@@ -8,12 +8,12 @@ use yii\base\InvalidConfigException;
 use yii\httpclient\Client;
 
 /**
- * Class BaiduApiStore
+ * Class ApiStore
  * @property string $baseUrl
  * @property string $apiKey
  * @package xutl\api
  */
-class BaiduApiStore extends BaseApi
+class ApiStore extends BaseApi
 {
     public $baseUrl = 'http://apis.baidu.com';
 
@@ -59,10 +59,10 @@ class BaiduApiStore extends BaseApi
      * @return array
      * @throws Exception
      */
-    protected function apiInternal($method, $url, array $params = [], array $headers = [])
+    public function api($method, $url, array $params = [], array $headers = [])
     {
         $headers = array_merge($headers, ['apikey' => $this->apiKey]);
-        return parent::apiInternal($method, $url, $params, $headers);
+        return parent::api($method, $url, $params, $headers);
     }
 
     /**

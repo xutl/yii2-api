@@ -30,7 +30,7 @@ class Collection extends Component
     }
 
     /**
-     * @return ApiInterface[] list of api clients.
+     * @return BaseApi[] list of api clients.
      */
     public function getApis()
     {
@@ -43,7 +43,7 @@ class Collection extends Component
 
     /**
      * @param string $id service id.
-     * @return ApiInterface api client instance.
+     * @return BaseApi api client instance.
      * @throws InvalidParamException on non existing client request.
      */
     public function get($id)
@@ -71,7 +71,7 @@ class Collection extends Component
      * Creates auth client instance from its array configuration.
      * @param string $id api client id.
      * @param array $config api client instance configuration.
-     * @return ApiInterface api client instance.
+     * @return BaseApi api client instance.
      */
     protected function create($id, $config)
     {
