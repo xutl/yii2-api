@@ -15,7 +15,7 @@ use yii\httpclient\Client;
  * Class YunTongxun
  * @package xutl\api
  */
-class YunTongxun extends Component implements ApiInterface
+class YunTongxun extends BaseApi
 {
     public $baseUrl = 'https://app.cloopen.com:8883';
     public $accountSid;
@@ -49,20 +49,23 @@ class YunTongxun extends Component implements ApiInterface
     }
 
     /**
-     * 合并基础URL和参数
-     * @param string $url base URL.
-     * @param array $params GET params.
-     * @return string composed URL.
+     * 获取Http Client
+     * @return Client
      */
-    protected function composeUrl($url, array $params = [])
+    public function getHttpClient()
     {
-        if (strpos($url, '?') === false) {
-            $url .= '?';
-        } else {
-            $url .= '&';
+        if (!is_object($this->_httpClient)) {
+            $this->_httpClient = new Client([
+                'baseUrl' => $this->baseUrl,
+                'requestConfig' => [
+                    'format' => Client::FORMAT_JSON
+                ],
+                'responseConfig' => [
+                    'format' => Client::FORMAT_JSON
+                ],
+            ]);
         }
-        $url .= http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-        return $url;
+        return $this->_httpClient;
     }
 
     /**
@@ -82,28 +85,14 @@ class YunTongxun extends Component implements ApiInterface
         } else if ($method == 'POST') {
             $url = $this->composeUrl($url, ['sig' => $sign]);
         }
-        $client = new Client([
-            'baseUrl' => $this->baseUrl,
-            'requestConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
-            'responseConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
-        ]);
+
         // 生成授权：主帐户Id + 英文冒号 + 时间戳
         $headers = array_merge($headers, [
             //'Accept' => 'application/json',
             //'Content-type' => 'application/json;charset=utf-8',
             'Authorization' => base64_encode($this->accountSid . ":" . $this->batch)]);
-        $response = $client->createRequest()
-            ->setHeaders($headers)
-            ->setData($params)
-            ->setMethod($method)
-            ->setUrl($url)
-            ->send();
+        $response = parent::api($url, $method, $params, $headers);
         if ($response->content['statusCode'] == '0000') {
-            unset($response['statusCode']);
             return $response;
         }
         Yii::error($response['statusCode'] . ':' . $response['statusMsg']);
