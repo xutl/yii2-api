@@ -13,7 +13,7 @@ use yii\httpclient\Client;
  * @property string $apiKey
  * @package xutl\api
  */
-class BaiduApiStore extends Component implements ApiInterface
+class BaiduApiStore extends BaseApi
 {
     public $baseUrl = 'http://apis.baidu.com';
 
@@ -34,6 +34,23 @@ class BaiduApiStore extends Component implements ApiInterface
     }
 
     /**
+     * 获取Http Client
+     * @return Client
+     */
+    public function getHttpClient()
+    {
+        if (!is_object($this->_httpClient)) {
+            $this->_httpClient = new Client([
+                'baseUrl' => $this->baseUrl,
+                'responseConfig' => [
+                    'format' => Client::FORMAT_JSON
+                ],
+            ]);
+        }
+        return $this->_httpClient;
+    }
+
+    /**
      * 请求Api接口
      * @param string $url
      * @param string $method
@@ -42,26 +59,10 @@ class BaiduApiStore extends Component implements ApiInterface
      * @return array
      * @throws Exception
      */
-    public function api($url, $method, array $params = [], array $headers = [])
+    protected function apiInternal($method, $url, array $params = [], array $headers = [])
     {
-        $client = new Client([
-            'baseUrl' => $this->baseUrl,
-            'responseConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
-        ]);
-        // 生成授权：主帐户Id + 英文冒号 + 时间戳
         $headers = array_merge($headers, ['apikey' => $this->apiKey]);
-        $response = $request = $client->createRequest()
-            ->setUrl($url)
-            ->setMethod($method)
-            ->setHeaders($headers)
-            ->setData($params)
-            ->send();
-        if (!$response->isOk) {
-            throw new Exception ('Http request failed.');
-        }
-        return $response->data;
+        return parent::apiInternal($method, $url, $params, $headers);
     }
 
     /**

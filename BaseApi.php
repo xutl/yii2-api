@@ -18,9 +18,15 @@ use yii\base\InvalidConfigException;
  */
 class BaseApi extends Component
 {
+    /**
+     * @var string
+     */
     public $baseUrl;
 
-    private $_httpClient;
+    /**
+     * @var Client
+     */
+    public $_httpClient;
 
     /**
      * @inheritdoc
@@ -33,6 +39,10 @@ class BaseApi extends Component
         }
     }
 
+    /**
+     * 获取Http Client
+     * @return Client
+     */
     public function getHttpClient()
     {
         if (!is_object($this->_httpClient)) {
@@ -63,7 +73,37 @@ class BaseApi extends Component
         if (!$response->isOk) {
             throw new Exception ('Http request failed.');
         }
-        return $response->data;
+        return $response;
+    }
+
+    /**
+     * 合并基础URL和参数
+     * @param string $url base URL.
+     * @param array $params GET params.
+     * @return string composed URL.
+     */
+    protected function composeUrl($url, array $params = [])
+    {
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        } else {
+            $url .= '&';
+        }
+        $url .= http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+        return $url;
+    }
+
+    /**
+     * send Request
+     * @param $url
+     * @param $method
+     * @param array $params
+     * @param array $headers
+     * @return array
+     */
+    public function api($url, $method, array $params = [], array $headers = [])
+    {
+        return $this->apiInternal($method, $url, $params, $headers);
     }
 
     /**
@@ -75,7 +115,7 @@ class BaseApi extends Component
      * @return array API response.
      * @throws Exception on failure.
      */
-    protected function apiInternal($url, $method, array $params, array $headers)
+    protected function apiInternal($method, $url, array $params, array $headers)
     {
         return $this->sendRequest($method, $url, $params, $headers);
     }

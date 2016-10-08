@@ -15,13 +15,16 @@ use yii\httpclient\Client;
  * Class Translate
  * @package xutl\api
  */
-class Translate extends Component implements ApiInterface
+class Translate extends BaseApi
 {
     /**
-     * @var
+     * @var string
      */
     public $appId;
 
+    /**
+     * @var string
+     */
     public $appKey;
 
     /**
@@ -44,33 +47,37 @@ class Translate extends Component implements ApiInterface
     }
 
     /**
+     * 获取Http Client
+     * @return Client
+     */
+    public function getHttpClient()
+    {
+        if (!is_object($this->_httpClient)) {
+            $this->_httpClient = new Client([
+                'baseUrl' => $this->baseUrl,
+                'responseConfig' => [
+                    'format' => Client::FORMAT_JSON
+                ],
+            ]);
+        }
+        return $this->_httpClient;
+    }
+
+    /**
      * 请求Api接口
      * @param string $url
      * @param string $method
      * @param array $params
+     * @param array $headers
      * @return array
      * @throws Exception
      */
-    public function api($url, $method, array $params = [])
+    protected function apiInternal($method, $url, array $params = [], array $headers = [])
     {
-        $client = new Client([
-            'baseUrl' => $this->baseUrl,
-            'responseConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
-        ]);
         $salt = uniqid();
         $sign = md5($this->appId . $params['q'] . $salt . $this->appKey);
         $params = array_merge($params, ['appid' => $this->appId, 'sign' => $sign, 'salt' => $salt]);
-        $response = $request = $client->createRequest()
-            ->setUrl($url)
-            ->setMethod($method)
-            ->setData($params)
-            ->send();
-        if (!$response->isOk) {
-            throw new Exception ('Http request failed.');
-        }
-        return $response->data;
+        return parent::apiInternal($method, $url, $params, $headers);
     }
 
     /**
