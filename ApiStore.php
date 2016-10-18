@@ -59,10 +59,10 @@ class ApiStore extends BaseApi
      * @return array
      * @throws Exception
      */
-    public function api($method, $url, array $params = [], array $headers = [])
+    public function api($url, $method, array $params = [], array $headers = [])
     {
         $headers = array_merge($headers, ['apikey' => $this->apiKey]);
-        return parent::api($method, $url, $params, $headers);
+        return parent::api($url, $method, $params, $headers);
     }
 
     /**
