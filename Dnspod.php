@@ -65,11 +65,11 @@ class Dnspod extends BaseApi
      * @return array
      * @throws Exception
      */
-    public function api($method, $url, array $params = [], array $headers = [])
+    public function api($url, $method, array $params = [], array $headers = [])
     {
         $params = array_merge($params, ['login_token' => $this->id . ',' . $this->token, 'format' => 'json']);
         $headers = array_merge($headers, ['user-agent' => 'XTL DDNS Client/' . $this->_version]);
-        $response = parent::api($method, $url, $params, $headers);
+        $response = parent::api($url, $method, $params, $headers);
         if ($response->data['status']['code'] != 1) {
             throw new Exception ($response->data['status']['message']);
         }

@@ -88,8 +88,6 @@ class YunTongxun extends BaseApi
 
         // 生成授权：主帐户Id + 英文冒号 + 时间戳
         $headers = array_merge($headers, [
-            //'Accept' => 'application/json',
-            //'Content-type' => 'application/json;charset=utf-8',
             'Authorization' => base64_encode($this->accountSid . ":" . $this->batch)]);
         $response = parent::api($url, $method, $params, $headers);
         if ($response->content['statusCode'] == '0000') {
