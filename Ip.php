@@ -7,7 +7,6 @@
 namespace xutl\api;
 
 use Yii;
-use yii\base\Component;
 use yii\base\Exception;
 use yii\httpclient\Client;
 
@@ -15,36 +14,39 @@ use yii\httpclient\Client;
  * Class Ip
  * @package xutl\api
  */
-class Ip extends Component implements ApiInterface
+class Ip extends BaseApi
 {
     public $baseUrl = 'http://ip.taobao.com';
+
+    /**
+     * 获取Http Client
+     * @return Client
+     */
+    public function getHttpClient()
+    {
+        if (!is_object($this->_httpClient)) {
+            $this->_httpClient = new Client([
+                'baseUrl' => $this->baseUrl,
+                'responseConfig' => [
+                    'format' => Client::FORMAT_JSON
+                ],
+            ]);
+        }
+        return $this->_httpClient;
+    }
 
     /**
      * 请求Api接口
      * @param string $url
      * @param string $method
      * @param array $params
+     * @param array $headers
      * @return array
      * @throws Exception
      */
     public function api($url, $method, array $params = [], array $headers = [])
     {
-        $client = new Client([
-            'baseUrl' => $this->baseUrl,
-            'responseConfig' => [
-                'format' => Client::FORMAT_JSON
-            ],
-        ]);
-        // 生成授权：主帐户Id + 英文冒号 + 时间戳
-        $response = $request = $client->createRequest()
-            ->setUrl($url)
-            ->setMethod($method)
-            ->setHeaders($headers)
-            ->setData($params)
-            ->send();
-        if (!$response->isOk) {
-            throw new Exception ('Http request failed.');
-        }
+        $response = parent::api($url, $method, $params, $headers);
         return $response->data;
     }
 
