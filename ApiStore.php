@@ -95,7 +95,6 @@ class ApiStore extends BaseApi
      */
     public function getMobile($mobile)
     {
-        $response = $this->api('apistore/mobilenumber/mobilenumber', 'GET', ['phone' => $mobile]);
-        return $response;
+        return $response = $this->api('apistore/mobilenumber/mobilenumber', 'GET', ['phone' => $mobile]);
     }
 }

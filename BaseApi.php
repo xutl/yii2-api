@@ -103,6 +103,11 @@ class BaseApi extends Component
      */
     public function api($url, $method, array $params = [], array $headers = [])
     {
-        return $this->sendRequest($method, $url, $params, $headers);
+        try {
+            return $this->sendRequest($method, $url, $params, $headers);
+        } catch (\Exception $e) {
+            sleep(10);
+            return $this->sendRequest($method, $url, $params, $headers);
+        }
     }
 }
