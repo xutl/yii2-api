@@ -62,7 +62,12 @@ class Showji extends BaseApi
      */
     public function get($mobile)
     {
-        $response = $this->api('Locating/showji.com2016234999234.aspx', 'GET', ['m' => $mobile, 'output' => 'json']);
-        return $response;
+        try {
+            $response = $this->api('Locating/showji.com2016234999234.aspx', 'GET', ['m' => $mobile, 'output' => 'json']);
+            return $response;
+        } catch (\Exception $e) {
+            sleep(30);
+            return $this->get($mobile);
+        }
     }
 }
