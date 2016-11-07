@@ -83,11 +83,24 @@ class Dnspod extends BaseApi
      */
     public function version()
     {
-        return $this->api('Info.Version','POST');
+        return $this->api('Info.Version', 'POST');
     }
 
-    public function domainList($type = 'all', $offset = null, $length=20, $group_id = 0, $keyword = null)
+    public function domainList($type = 'all', $offset = null, $length = 20, $group_id = 0, $keyword = null)
     {
         return $this->api('Domain.List', 'POST', ['type' => $type]);
+    }
+
+    /**
+     * 动态DNS
+     * @param int $domainId
+     * @param int $recordId
+     * @param string $subDomain 子域名
+     * @param string $recordLine 线路
+     * @return array
+     */
+    public function RecordDdns($domainId, $recordId, $subDomain, $recordLine = '默认')
+    {
+        return $this->api('Record.Ddns', 'POST', ['domain_id' => $domainId, 'record_id' => $recordId, 'record_line' => $recordLine, 'sub_domain' => $subDomain]);
     }
 }
