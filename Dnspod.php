@@ -25,6 +25,8 @@ class Dnspod extends BaseApi
     public $id;
     public $token;
 
+    private $loginToken;
+
     /**
      * @inheritdoc
      */
@@ -37,6 +39,8 @@ class Dnspod extends BaseApi
         if (empty ($this->token)) {
             throw new InvalidConfigException ('The "token" property must be set.');
         }
+
+        $this->loginToken = $this->id . ',' . $this->token;
     }
 
     /**
@@ -67,7 +71,7 @@ class Dnspod extends BaseApi
      */
     public function api($url, $method, array $params = [], array $headers = [])
     {
-        $params = array_merge($params, ['login_token' => $this->id . ',' . $this->token, 'format' => 'json']);
+        $params = array_merge($params, ['login_token' => $this->loginToken, 'format' => 'json']);
         $headers = array_merge($headers, ['user-agent' => 'XTL DDNS Client/' . $this->_version]);
         $response = parent::api($url, $method, $params, $headers);
         if ($response->data['status']['code'] != 1) {
