@@ -18,8 +18,14 @@ use yii\base\InvalidConfigException;
  */
 class Gitlab extends BaseApi
 {
-    public $baseUrl = 'http://192.168.10.103/api/v3';
+    /**
+     * @var string 接口地址
+     */
+    public $baseUrl;
 
+    /**
+     * @var string 令牌
+     */
     public $privateToken;
 
     /**
@@ -64,19 +70,5 @@ class Gitlab extends BaseApi
         $headers = array_merge($headers, ['PRIVATE-TOKEN' => $this->privateToken]);
         $response = parent::api($url, $method, $params, $headers);
         return $response->data;
-    }
-
-    public function getUsers()
-    {
-        return $this->api('users');
-    }
-
-    /**
-     * 获取所有项目
-     * @return array
-     */
-    public function getProjects()
-    {
-        return $this->api('projects');
     }
 }
