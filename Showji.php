@@ -17,6 +17,17 @@ use yii\httpclient\Client;
 class Showji extends BaseApi
 {
     public $baseUrl = 'http://v.showji.com';
+    public $urls = [
+        'http://v.showji.com',
+        'http://120.52.73.34/v.showji.com',
+        'http://120.52.73.1/v.showji.com',
+        'http://120.52.73.2/v.showji.com',
+        'http://120.52.73.3/v.showji.com',
+        'http://120.52.73.4/v.showji.com',
+        'http://120.52.73.5/v.showji.com',
+        'http://120.52.73.6/v.showji.com',
+        'http://120.52.73.7/v.showji.com',
+    ];
 
     /**
      * 获取Http Client
@@ -33,6 +44,15 @@ class Showji extends BaseApi
             ]);
         }
         return $this->_httpClient;
+    }
+
+    public function changeBaseUrl($url = null)
+    {
+        if (is_null($url)) {
+            $this->getHttpClient()->baseUrl = array_rand($this->urls, rand(0, 7));
+        } else {
+            $this->getHttpClient()->baseUrl = $url;
+        }
     }
 
     /**
@@ -62,7 +82,13 @@ class Showji extends BaseApi
      */
     public function get($mobile)
     {
-        $response = $this->api('Locating/showji.com2016234999234.aspx', 'GET', ['m' => $mobile, 'output' => 'json']);
+        try {
+            $response = $this->api('Locating/showji.com2016234999234.aspx', 'GET', ['m' => $mobile, 'output' => 'json']);
+        } catch (\Exception $e) {
+            $this->changeBaseUrl();
+            //递归重试
+            $response = $this->get($mobile);
+        }
         return $response;
     }
 }
