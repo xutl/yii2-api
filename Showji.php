@@ -49,7 +49,7 @@ class Showji extends BaseApi
     public function changeBaseUrl($url = null)
     {
         if (is_null($url)) {
-            $this->getHttpClient()->baseUrl = array_rand($this->urls, rand(0, 7));
+            $this->getHttpClient()->baseUrl = array_rand($this->urls);
         } else {
             $this->getHttpClient()->baseUrl = $url;
         }
