@@ -54,7 +54,7 @@ class GoogleCode extends BaseApi
      */
     public function getAll($page = 1)
     {
-        $response = $this->api("https://codesite-archive.appspot.com/archive/search?q=domain:code.google.com&page={$page}", 'GET');
+        $response = $this->api("https://codesite-archive.appspot.com/archive/search?q=undefined&page={$page}", 'GET');
         return $response;
     }
 
@@ -66,7 +66,7 @@ class GoogleCode extends BaseApi
      */
     public function getSearch($query, $page = 1)
     {
-        $response = $this->api("https://codesite-archive.appspot.com/archive/search?q=domain:code.google.com%20{$query}&page={$page}", 'GET');
+        $response = $this->api("https://codesite-archive.appspot.com/archive/search?q={$query}&page={$page}", 'GET');
         return $response;
     }
 
@@ -78,7 +78,7 @@ class GoogleCode extends BaseApi
      */
     public function getLabel($label, $page = 1)
     {
-        $response = $this->api("https://codesite-archive.appspot.com/search/query?query=label:{$label}&page={$page}", 'GET');
+        $response = $this->api("https://codesite-archive.appspot.com/search/query?query=label%3A{$label}&page={$page}", 'GET');
         return $response;
     }
 
