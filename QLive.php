@@ -169,4 +169,41 @@ class QLive extends BaseApi
             'sign' => $sign
         ]);
     }
+
+    /**
+     * 获取推流地址
+     * 如果不传key和过期时间，将返回不含防盗链的url
+     * @param int|string $streamId 您用来区别不通推流地址的唯一id
+     * @param null|string $time 过期时间 sample 2016-11-12 12:00:00
+     * @return string
+     */
+    public function getPushUrl($streamId, $time = '2099-12-30 23:59:59')
+    {
+        $liveCode = $this->bizId . "_" . $streamId;
+        if ($time) {
+            $txTime = strtoupper(base_convert(strtotime($time), 10, 16));
+            $txSecret = md5($this->antiTheftKey . $liveCode . $txTime);
+            $extStr = "?" . http_build_query([
+                    "bizid" => $this->bizId,
+                    "txSecret" => $txSecret,
+                    "txTime" => $txTime
+                ]);
+        }
+        return "rtmp://" . $this->bizId . ".livepush.myqcloud.com/live/" . $liveCode . (isset($extStr) ? $extStr : "");
+    }
+
+    /**
+     * 获取播放地址
+     * @param int|string $streamId 您用来区别不通推流地址的唯一id
+     * @return array
+     */
+    public function getPlayUrls($streamId)
+    {
+        $liveCode = $this->bizId . "_" . $streamId;
+        return [
+            'rtmp' => "rtmp://" . $this->bizId . ".liveplay.myqcloud.com/live/" . $liveCode,
+            'flv' => "http://" . $this->bizId . ".liveplay.myqcloud.com/live/" . $liveCode . ".flv",
+            'hls' => "http://" . $this->bizId . ".liveplay.myqcloud.com/live/" . $liveCode . ".m3u8"
+        ];
+    }
 }
