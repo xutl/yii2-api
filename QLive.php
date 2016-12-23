@@ -61,7 +61,6 @@ class QLive extends BaseApi
         return $response->data;
     }
 
-
     /**
      * 开启或者关闭一个直播流的可推流状态。
      * @param string $streamId
@@ -83,19 +82,63 @@ class QLive extends BaseApi
     }
 
     /**
-     * 启用直播流
-     * @param string $streamId
+     * 查询直播状态
+     * @param $streamId
      * @return array
      */
-    public function enabledStream($streamId)
+    public function liveChannelGetStatus($streamId){
+        $time = time() + 10;
+        $sign = md5($this->apiKey . $time);
+        return $this->api('common_access', 'GET', [
+            'cmd' => $this->appId,
+            'interface' => 'Live_Channel_GetStatus',
+            'Param.s.channel_id' => $this->bizId . '_' . $streamId,
+            't' => $time,
+            'sign' => $sign
+        ]);
+    }
+
+    /**
+     * 用于查询某条直播流截止到调用时间为止已经生成的录制文件。
+     * @param string $streamId
+     * @param int $page
+     * @param int $page_size
+     * @param string $sortType
+     * @return array
+     */
+    public function liveTapeGetFilelist($streamId, $page = 1, $page_size = 100, $sortType = 'asc')
     {
         $time = time() + 10;
         $sign = md5($this->apiKey . $time);
         return $this->api('common_access', 'GET', [
             'cmd' => $this->appId,
-            'interface' => 'Live_Channel_SetStatus',
+            'interface' => 'Live_Tape_GetFilelist',
             'Param.s.channel_id' => $this->bizId . '_' . $streamId,
-            'Param.n.status' => 1,
+            'Param.n.page_no' => $page,
+            'Param.n.page_size' => $page_size,
+            'Param.s.sort_type' => $sortType,
+            't' => $time,
+            'sign' => $sign
+        ]);
+    }
+
+    /**
+     * 查询直播中的频道新产生的截图文件。
+     * @param string $streamId
+     * @param int $bid
+     * @param int $count
+     * @return array
+     */
+    public function liveQueueGet($streamId, $bid, $count = 100)
+    {
+        $time = time() + 10;
+        $sign = md5($this->apiKey . $time);
+        return $this->api('common_access', 'GET', [
+            'cmd' => $this->appId,
+            'interface' => 'Live_Queue_Get',
+            'Param.s.channel_id' => $this->bizId . '_' . $streamId,
+            'Param.n.bid' => $bid,
+            'Param.n.count' => $count,
             't' => $time,
             'sign' => $sign
         ]);
