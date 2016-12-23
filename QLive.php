@@ -62,6 +62,31 @@ class QLive extends BaseApi
     }
 
     /**
+     * 生成签名
+     * @param int $time
+     * @return string
+     */
+    public function sign($time)
+    {
+        return md5($this->apiKey . $time);
+    }
+
+    /**
+     * 校验签名是否正确
+     * @param int $time
+     * @param string $sign
+     * @return bool
+     */
+    public function checkSign($time, $sign)
+    {
+        if ($this->sign($time) != $sign) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
      * 开启或者关闭一个直播流的可推流状态。
      * @param string $streamId
      * @param bool $status
@@ -86,7 +111,8 @@ class QLive extends BaseApi
      * @param $streamId
      * @return array
      */
-    public function liveChannelGetStatus($streamId){
+    public function liveChannelGetStatus($streamId)
+    {
         $time = time() + 10;
         $sign = md5($this->apiKey . $time);
         return $this->api('common_access', 'GET', [
