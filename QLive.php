@@ -106,7 +106,7 @@ class QLive extends BaseApi
      * @param string $sortType
      * @return array
      */
-    public function liveTapeGetFilelist($streamId, $page = 1, $page_size = 100, $sortType = 'asc')
+    public function liveTapeGetFileList($streamId, $page = 1, $page_size = 100, $sortType = 'asc')
     {
         $time = time() + 10;
         $sign = md5($this->apiKey . $time);
