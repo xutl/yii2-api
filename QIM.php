@@ -80,17 +80,14 @@ class QIM extends BaseApi
      */
     public function api($url, $method = 'POST', array $params = [], array $headers = [])
     {
-        $sign = $this->genSig($this->adminUser);
         $commonParams = [
             'identifier' => $this->adminUser,
             'sdkappid' => $this->appId,
             'random' => $this->generateRandom(),
             'contenttype' => 'json',
-            'usersig' => $sign
+            'usersig' => $this->genSig($this->adminUser)
         ];
         $url = $this->composeUrl($url, $commonParams);
-        echo $sign . PHP_EOL;
-        echo $url . PHP_EOL;
         $response = parent::api($url, $method, $params, []);
         return $response->data;
     }
