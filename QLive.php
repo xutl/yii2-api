@@ -52,7 +52,7 @@ class QLive extends BaseApi
      * @param string $method
      * @param array $params
      * @param array $headers
-     * @return array
+     * @return array $response
      * @throws Exception
      */
     public function api($url, $method, array $params = [], array $headers = [])
@@ -190,6 +190,16 @@ class QLive extends BaseApi
                 ]);
         }
         return "rtmp://" . $this->bizId . ".livepush.myqcloud.com/live/" . $liveCode . (isset($extStr) ? $extStr : "");
+    }
+
+    /**
+     * 将流ID替换成原始的ID即去掉bizid_
+     * @param string $streamId
+     * @return mixed
+     */
+    public function getRawStreamId($streamId)
+    {
+        return str_replace($this->bizId . "_", '', $streamId);
     }
 
     /**

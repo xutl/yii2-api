@@ -59,7 +59,7 @@ class BaseApi extends Component
      * @param string $url request URL.
      * @param array $params request params.
      * @param array $headers additional request headers.
-     * @return array response.
+     * @return object response.
      * @throws Exception on failure.
      */
     protected function sendRequest($method, $url, array $params = [], array $headers = [])
