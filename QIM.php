@@ -88,6 +88,7 @@ class QIM extends BaseApi
             'usersig' => $this->genSig($this->adminUser)
         ];
         $url = $this->composeUrl($url, $commonParams);
+        /** @var \yii\httpclient\Response $response */
         $response = parent::api($url, $method, $params, []);
         return $response->data;
     }
