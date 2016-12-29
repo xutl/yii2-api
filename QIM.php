@@ -95,18 +95,22 @@ class QIM extends BaseApi
 
     /**
      * 将用户导入到IM中
-     * @param string $username
-     * @param string $nick
-     * @param string $faceUrl
+     * @param array $params
      * @return array
      */
-    public function accountImport($username, $nick, $faceUrl = '')
+    public function accountImport(array $params)
     {
-        return $this->api('im_open_login_svc/account_import', 'POST', [
-            'Identifier' => $username,
-            'Nick' => $nick,
-            'FaceUrl' => $faceUrl,
-        ]);
+        return $this->api('im_open_login_svc/account_import', 'POST', $params);
+    }
+
+    /**
+     * 创建群
+     * @param array $params
+     * @return array
+     */
+    public function createGroup(array $params)
+    {
+        return $this->api('group_open_http_svc/create_group', 'POST', $params);
     }
 
     /**
@@ -253,7 +257,7 @@ class QIM extends BaseApi
         $json = [
             'TLS.account_type' => $this->accountType,
             'TLS.identifier' => (string)$identifier,
-            'TLS.appid_at_3rd' => '0',
+            'TLS.appid_at_3rd' => (string)$this->appId,
             'TLS.sdk_appid' => (string)$this->appId,
             'TLS.expire_after' => (string)$expire,
             'TLS.version' => '201512300000',
