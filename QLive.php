@@ -189,7 +189,11 @@ class QLive extends BaseApi
                     "txTime" => $txTime
                 ]);
         }
-        return "rtmp://" . $this->bizId . ".livepush.myqcloud.com/live/" . $liveCode . (isset($extStr) ? $extStr : "");
+        return [
+            'pushUrl' => "rtmp://" . $this->bizId . ".livepush.myqcloud.com/live/",
+            'liveCode' => $liveCode . (isset($extStr) ? $extStr : "")
+        ];
+        //return "rtmp://" . $this->bizId . ".livepush.myqcloud.com/live/" . $liveCode . (isset($extStr) ? $extStr : "");
     }
 
     /**
